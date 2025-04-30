@@ -1,13 +1,5 @@
-(function(root, factory) {  // eslint-disable-line
-    if (typeof define === 'function' && define.amd) {
-      // AMD. Register as an anonymous module.
-      define([], function() {
-        return factory.call(root);
-      });
-    } else {
-      // Browser globals
+(function(root, factory) {
       root.webgl = factory.call(root);
-    }
   }(this, function() {
   
     function createShader(gl, type, source) {

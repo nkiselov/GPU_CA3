@@ -161,7 +161,7 @@ function makePlot(width,height,color){
     }
 }
 
-function makeTimePlot(plot,window,dx){
+function makeTimePlot(plot,window){
     let arr = []
     return {
         html: plot.html,
@@ -169,6 +169,9 @@ function makeTimePlot(plot,window,dx){
             arr.push([t,v])
             if(arr.length>window) arr.shift()
             plot.setArr(arr)
+        },
+        reset: ()=>{
+            arr = []
         }
     }
 }
