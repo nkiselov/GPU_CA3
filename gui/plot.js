@@ -168,7 +168,7 @@ function makeTimePlot(plot,window){
         add: (t,v)=>{
             arr.push([t,v])
             if(arr.length>window) arr.shift()
-            plot.setArr(arr)
+            if(arr.length>5)    plot.setArr(arr)
         },
         reset: ()=>{
             arr = []

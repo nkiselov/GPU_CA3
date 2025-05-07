@@ -4,20 +4,20 @@ let colors = [
     "#FF0000", // Bright Red
     "#0000FF", // Blue
     "#008000", // Dark Green (better than lime for visibility)
-    "#FFA500", // Orange
-    "#800080", // Purple
-    "#00FFFF", // Cyan
-    "#FF00FF", // Magenta
-    "#FF4500", // Orange-Red
-    "#006400", // Deep Green
-    "#000080", // Navy Blue
-    "#8B0000", // Dark Red
-    "#4B0082", // Indigo
-    "#008080", // Teal
-    "#FF8C00", // Dark Orange
-    "#9932CC", // Dark Orchid
-    "#2E8B57", // Sea Green
-    "#A52A2A"  // Brown
+    // "#FFA500", // Orange
+    // "#800080", // Purple
+    // "#00FFFF", // Cyan
+    // "#FF00FF", // Magenta
+    // "#FF4500", // Orange-Red
+    // "#006400", // Deep Green
+    // "#000080", // Navy Blue
+    // "#8B0000", // Dark Red
+    // "#4B0082", // Indigo
+    // "#008080", // Teal
+    // "#FF8C00", // Dark Orange
+    // "#9932CC", // Dark Orchid
+    // "#2E8B57", // Sea Green
+    // "#A52A2A"  // Brown
 ];
 
 let dt = 0.02
