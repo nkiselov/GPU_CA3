@@ -27,6 +27,7 @@ let plotTitles = neural.stateLabels().slice(3)
 let running = true
 let neuronState = [neural.initVecNeuron([0,0,0.1])]
 let time = 0
+let highres = false
 
 // function diffeqStep(x0){
 //     let xm = vecAdd(x0,vecMul(dt/2, neural.stepVecNeuron(x0)))
@@ -75,7 +76,8 @@ let diffeqStep = rk4Step
 function runStep(){
     if(running){
         // for(let q=0; q<10; q++){
-        for(let it=0; it<10; it++){
+        let stepCount = highres?1:10;
+        for(let it=0; it<stepCount; it++){
             time+=dt
             neuronState = diffeqStep(neuronState)
         }
@@ -93,11 +95,14 @@ let main = makevbox([
         makeButton("Stop",()=>running=false),
         makeButton("Restart",()=>{
             neuronState = [neural.initVecNeuron([0,0,0.1])]
+            time = 0
             for(let i=0; i<plots.length; i++) plots[i].reset()
             running=true
         }),
         makeDropdown("Method",["euler","mid","rk4","inveuler"],ind=>diffeqStep=[eulerStep,midStep,rk4Step,backEulerStep][ind],3),
-        makeInput("dt",0.025,val=>dt=val).html
+        makeInput("dt",0.025,val=>dt=val).html,
+        makeh("Highres"),
+        maketoggle(highres,val=>highres=val).html
 
     ]),
     ...plots.map((p,i)=>makehbox([p.html,makeh(plotTitles[i])]))

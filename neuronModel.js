@@ -165,9 +165,6 @@
 
     function stepVecNeuronBacksub(vec, h) {
         [I_ext_s, I_ext_p, I_ext_d, V_s, V_p, V_d, m_s, h_s, n_s, w_s, Ca_s, c1_s, r_s, a_p, b_p, Ca_p, c1_p, r_p, a_d, b_d] = vec
-        let I_comp_s = (V_p - V_s) / 100
-        let I_comp_d = (V_p - V_d) / 300
-        let I_comp_p = I_comp_s - I_comp_d
 
         //Soma
         let I_L_s = 0.1 // * (vL - V_s)
@@ -194,17 +191,33 @@
         res[ind++] = 0
 
         let I_s_sum = I_L_s + I_Na_s + I_K_s + I_KHT_s + I_CaBK_s + I_Ca_s
-        let V_s_eq = (I_L_s * vL + I_Na_s * vNa + I_K_s * vK + I_KHT_s * vK + I_CaBK_s * vK + I_Ca_s * vCa) / I_s_sum
+        let V_s_eq = (I_L_s * vL + I_Na_s * vNa + I_K_s * vK + I_KHT_s * vK + I_CaBK_s * vK + I_Ca_s * vCa)
 
         let I_p_sum = I_L_p + I_A_p + I_CaBK_p + I_Ca_p
-        let V_p_eq = (I_L_p * vL + I_A_p * vK + I_CaBK_p * vK + I_Ca_p * vCa) / I_p_sum
+        let V_p_eq = (I_L_p * vL + I_A_p * vK + I_CaBK_p * vK + I_Ca_p * vCa)
 
         let I_d_sum = I_L_d + I_A_d
-        let V_d_eq = (I_L_d * vL + I_A_d * vK) / I_d_sum
+        let V_d_eq = (I_L_d * vL + I_A_d * vK)
 
-        res[ind++] = ((I_ext_s + I_comp_s) / 0.02 + (V_s_eq - V_s) / (1/I_s_sum+h))
-        res[ind++] = ((I_ext_p + I_comp_p) / 0.02 + (V_p_eq - V_p) / (1/I_p_sum+h))
-        res[ind++] = ((I_ext_d + I_comp_d) / 0.06 + (V_d_eq - V_d) / (1/I_d_sum+h))
+        let Comp_S = 100
+        let Comp_D = 300
+        let A_s = 0.02
+        let A_p = 0.02
+        let A_d = 0.06
+
+        // let I_comp_s = (V_p - V_s) / 100
+        // let I_comp_d = (V_p - V_d) / 300
+        // let I_comp_p = I_comp_s - I_comp_d
+
+        let M_s = I_s_sum + 1 / Comp_S / A_s
+        let M_p = I_p_sum - 1 / Comp_S / A_p + 1 / Comp_D / A_p
+        let M_d = I_d_sum + 1 / Comp_D / A_d
+        V_s_eq += I_ext_s / A_s + V_p / Comp_S / A_s
+        V_p_eq += I_ext_p / A_p + V_d / Comp_D / A_p - V_s / Comp_S / A_p
+        V_d_eq += I_ext_d / A_d + V_p / Comp_D / A_d
+        res[ind++] = (V_s_eq/M_s - V_s) / (1 / M_s + h)
+        res[ind++] = (V_p_eq/M_p - V_p) / (1 / M_p + h)
+        res[ind++] = (V_d_eq/M_d - V_d) / (1 / M_d + h)
 
         //Soma
         res[ind++] = (m_inf(V_s) - m_s) / (m_tau(V_s) + h)

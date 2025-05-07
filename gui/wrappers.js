@@ -55,3 +55,20 @@ function makeInput(label,value,onchange){
         }
     }
 }
+
+function maketoggle(checked, onchange){
+    let tog = document.createElement("input")
+    tog.type = "checkbox"
+    tog.checked = checked
+    tog.onchange = ()=>onchange(tog.checked)
+    return {
+        html: tog,
+        setValue: val=>{
+            tog.checked=val
+            onchange(val)
+        },
+        getValue: ()=>{
+            return tog.checked
+        }
+    }
+}
