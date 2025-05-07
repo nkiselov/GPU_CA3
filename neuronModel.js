@@ -163,7 +163,7 @@ function initVecNeuron(current){
     ]
 }
 
-function stepVecNeuron(vec){
+function stepVecNeuronBacksub(vec,h){
     [I_ext_s,I_ext_p,I_ext_d,V_s,V_p,V_d,m_s,h_s,n_s,w_s,Ca_s,c1_s,r_s,a_p,b_p,Ca_p,c1_p,r_p,a_d,b_d] = vec
     let I_comp_s = (V_p - V_s) / 100
     let I_comp_d = (V_p - V_d) / 300
@@ -198,26 +198,30 @@ function stepVecNeuron(vec){
     res[ind++] = ((I_ext_d + I_comp_d)/ 0.06 + (I_L_d + I_A_d))
 
     //Soma
-    res[ind++] = (m_inf(V_s) - m_s) / m_tau(V_s)
-    res[ind++] = (h_inf(V_s) - h_s) / h_tau(V_s)
-    res[ind++] = (n_inf(V_s) - n_s) / n_tau(V_s)
-    res[ind++] = (w_inf(V_s) - w_s) / w_tau(V_s)
+    res[ind++] = (m_inf(V_s) - m_s) / (m_tau(V_s)+h)
+    res[ind++] = (h_inf(V_s) - h_s) / (h_tau(V_s)+h)
+    res[ind++] = (n_inf(V_s) - n_s) / (n_tau(V_s)+h)
+    res[ind++] = (w_inf(V_s) - w_s) / (w_tau(V_s)+h)
     res[ind++] = (0.0002 * I_Ca_s - Ca_s / Ca_tau)
-    res[ind++] = (c1_inf(V_s, Ca_s) - c1_s) / c1_tau
-    res[ind++] = (r_inf(V_s) - r_s) / r_tau(V_s)
+    res[ind++] = (c1_inf(V_s, Ca_s) - c1_s) / (c1_tau+h)
+    res[ind++] = (r_inf(V_s) - r_s) / (r_tau(V_s)+h)
 
     //Proximal
-    res[ind++] = (a_inf(V_p) - a_p) / a_tau(V_p)
-    res[ind++] = (b_inf(V_p) - b_p) / b_tau(V_p)
+    res[ind++] = (a_inf(V_p) - a_p) / (a_tau(V_p)+h)
+    res[ind++] = (b_inf(V_p) - b_p) / (b_tau(V_p)+h)
     res[ind++] = (0.0002 * I_Ca_p - Ca_p / Ca_tau)
-    res[ind++] = (c1_inf(V_p, Ca_p) - c1_p) / c1_tau
-    res[ind++] = (r_inf(V_p) - r_p) / r_tau(V_p)
+    res[ind++] = (c1_inf(V_p, Ca_p) - c1_p) / (c1_tau+h)
+    res[ind++] = (r_inf(V_p) - r_p) / (r_tau(V_p)+h)
 
     //Distal
-    res[ind++] = (a_inf(V_d) - a_d) / a_tau(V_d)
-    res[ind++] = (b_inf(V_d) - b_d) / b_tau(V_d)
+    res[ind++] = (a_inf(V_d) - a_d) / (a_tau(V_d)+h)
+    res[ind++] = (b_inf(V_d) - b_d) / (b_tau(V_d)+h)
 
     return res
+}
+
+function stepVecNeuron(vec){
+    return stepVecNeuronBacksub(vec,0)
 }
 
 function potentialVecNeuron(vec){
@@ -232,6 +236,7 @@ return {
     makeNeuron: makeNeuron,
     initVecNeuron: initVecNeuron,
     stepVecNeuron: stepVecNeuron,
+    stepVecNeuronBacksub: stepVecNeuronBacksub,
     potentialVecNeuron: potentialVecNeuron,
     stateLabels: stateLabels
 }
