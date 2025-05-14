@@ -4,8 +4,8 @@ let colors = [
     "#FF0000", // Bright Red
     "#0000FF", // Blue
     "#008000", // Dark Green (better than lime for visibility)
-    // "#FFA500", // Orange
-    // "#800080", // Purple
+    "#FFA500", // Orange
+    "#800080", // Purple
     // "#00FFFF", // Cyan
     // "#FF00FF", // Magenta
     // "#FF4500", // Orange-Red
@@ -20,54 +20,53 @@ let colors = [
     // "#A52A2A"  // Brown
 ];
 
+nauralModel = neural
+let current = [0,0,0.1]
+
 let dt = 0.02
 
 let plots = colors.map(c=>makeTimePlot(makePlot(1000,300,c),Infinity))
-let plotTitles = neural.stateLabels().slice(3)
+let plotTitles = nauralModel.stateLabels().slice(1)
 let running = true
-let neuronState = [neural.initVecNeuron([0,0,0.1])]
+let neuronState = [nauralModel.initVecNeuron(current)]
 let time = 0
 let highres = false
 
-// function diffeqStep(x0){
-//     let xm = vecAdd(x0,vecMul(dt/2, neural.stepVecNeuron(x0)))
-//     return vecAdd(x0,vecMul(dt,neural.stepVecNeuron(xm)))
-// }
 
 function rk4Step(x){
     let x0 = x[0]
-    let x1 = neural.stepVecNeuron(x0)
-    let x2 = neural.stepVecNeuron(vecAdd(x0,vecMul(dt/2,x1)))
-    let x3 = neural.stepVecNeuron(vecAdd(x0,vecMul(dt/2,x2)))
-    let x4 = neural.stepVecNeuron(vecAdd(x0,vecMul(dt,x3)))
+    let x1 = nauralModel.stepVecNeuron(x0)
+    let x2 = nauralModel.stepVecNeuron(vecAdd(x0,vecMul(dt/2,x1)))
+    let x3 = nauralModel.stepVecNeuron(vecAdd(x0,vecMul(dt/2,x2)))
+    let x4 = nauralModel.stepVecNeuron(vecAdd(x0,vecMul(dt,x3)))
     return [vecAdd(x0,vecMul(dt/6,vecAdd(vecAdd(x1,vecMul(2,x2)),vecAdd(vecMul(2,x3),x4))))]
 }
 
 function midStep(x){
     let x0 = x[0]
-    let x1 = vecAdd(x0,vecMul(dt, neural.stepVecNeuron(x0)))
-    return [vecAdd(x0,vecMul(dt/2,vecAdd(neural.stepVecNeuron(x0),neural.stepVecNeuron(x1))))]
+    let x1 = vecAdd(x0,vecMul(dt, nauralModel.stepVecNeuron(x0)))
+    return [vecAdd(x0,vecMul(dt/2,vecAdd(nauralModel.stepVecNeuron(x0),nauralModel.stepVecNeuron(x1))))]
 }
 
 function eulerStep(x){
     let x0 = x[0]
-    return [vecAdd(x0,vecMul(dt, neural.stepVecNeuron(x0)))]
+    return [vecAdd(x0,vecMul(dt, nauralModel.stepVecNeuron(x0)))]
 }
 
 function backEulerStep(x){
     let x0 = x[0]
-    return [vecAdd(x0,vecMul(dt, neural.stepVecNeuronBacksub(x0,dt)))]
+    return [vecAdd(x0,vecMul(dt, nauralModel.stepVecNeuronBacksub(x0,dt)))]
 }
 
 function AB2Step(x){
     if(x.length==1) return [x[0],eulerStep(x)[0]]
-    return [x[1],vecAdd(x[1],vecAdd(vecMul(3*dt/2,neural.stepVecNeuron(x[1])),vecMul(-dt/2,neural.stepVecNeuron(x[0]))))]
+    return [x[1],vecAdd(x[1],vecAdd(vecMul(3*dt/2,nauralModel.stepVecNeuron(x[1])),vecMul(-dt/2,nauralModel.stepVecNeuron(x[0]))))]
 }
 
 function midBackEulerStep(x){
     let x0 = x[0]
-    let x1 = vecAdd(x0,vecMul(dt/2, neural.stepVecNeuron(x0)))
-    return [vecAdd(x0,vecMul(dt,neural.stepVecNeuronBacksub(x1,dt)))]
+    let x1 = vecAdd(x0,vecMul(dt/2, nauralModel.stepVecNeuron(x0)))
+    return [vecAdd(x0,vecMul(dt,nauralModel.stepVecNeuronBacksub(x1,dt)))]
 }
 
 
@@ -75,14 +74,12 @@ let diffeqStep = rk4Step
 
 function runStep(){
     if(running){
-        // for(let q=0; q<10; q++){
         let stepCount = highres?1:10;
         for(let it=0; it<stepCount; it++){
             time+=dt
             neuronState = diffeqStep(neuronState)
         }
-            for(let i=0; i<plots.length; i++) plots[i].add(time,neuronState[0][3+i])
-        // }
+        for(let i=0; i<plots.length; i++) plots[i].add(time,neuronState[0][3+i])
     }
     requestAnimationFrame(runStep)
 }
@@ -94,7 +91,7 @@ let main = makevbox([
         makeButton("Run",()=>running=true),
         makeButton("Stop",()=>running=false),
         makeButton("Restart",()=>{
-            neuronState = [neural.initVecNeuron([0,0,0.1])]
+            neuronState = [nauralModel.initVecNeuron(current)]
             time = 0
             for(let i=0; i<plots.length; i++) plots[i].reset()
             running=true
