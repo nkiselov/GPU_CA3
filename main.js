@@ -20,8 +20,8 @@ let colors = [
     // "#A52A2A"  // Brown
 ];
 
-nauralModel = neural
-let current = [0,0,0.1]
+nauralModel = intNeural
+let current = 20
 
 let dt = 0.02
 
@@ -79,7 +79,7 @@ function runStep(){
             time+=dt
             neuronState = diffeqStep(neuronState)
         }
-        for(let i=0; i<plots.length; i++) plots[i].add(time,neuronState[0][3+i])
+        for(let i=0; i<plots.length; i++) plots[i].add(time,neuronState[0][1+i])
     }
     requestAnimationFrame(runStep)
 }
