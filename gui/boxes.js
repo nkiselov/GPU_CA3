@@ -11,3 +11,10 @@ function makevbox(elems){
     elems.forEach((e)=>vbox.appendChild(e))
     return vbox
 }
+
+function makeboxref(box){
+    return (elems)=>{
+        box.innerHTML = ''
+        elems.forEach((e)=>box.appendChild(e))
+    }
+}

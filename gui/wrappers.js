@@ -56,7 +56,7 @@ function makeInput(label,value,onchange){
     }
 }
 
-function maketoggle(checked, onchange){
+function makeToggle(checked, onchange){
     let tog = document.createElement("input")
     tog.type = "checkbox"
     tog.checked = checked
