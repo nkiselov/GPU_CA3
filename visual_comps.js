@@ -330,6 +330,9 @@ function makeSynapseDisplay(synapse) {
     });
     container.appendChild(bitPos.html);
 
+    container.style.borderBottom = '1px black solid'
+    container.style.paddingBottom = '2px'
+
     return {
         html: container,
         update: (newSynapse) => {

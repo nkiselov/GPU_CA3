@@ -1,15 +1,17 @@
-loadAndDeserializeNetimages("grid10x10.bin").then(data=>{
+loadAndDeserializeNetimages("grid20x20.bin").then(data=>{
 
-console.log(data)
+// console.log(data)
 
-let visual = makeGridImageVisual(data.spec,data.images[0])
 let curInd = 20
+let visual = makeGridImageVisual(data.spec,data.images[curInd])
 let rewind = false
 let rewindToggle = makeToggle(rewind,(val)=>rewind=val)
+let iterLabel = makeh(curInd)
 
 function step(){
     if(rewind) curInd = (curInd+data.images.length-1)%data.images.length
     else curInd = (curInd+1)%data.images.length
+    iterLabel.innerHTML = curInd
     visual.setImage(data.images[curInd])
 }
 
@@ -27,7 +29,9 @@ let main = makevbox([
         makeButton("Stop",()=>running = false),
         makeButton("Step",()=>step()),
         makeh("Rewind"),
-        rewindToggle.html
+        rewindToggle.html,
+        makeh("Iter #"),
+        iterLabel
     ]),
     visual.html
 ])
