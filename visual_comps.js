@@ -167,7 +167,7 @@ function makeStaticField(label, initialValue) {
     
     const valueEl = document.createElement('span');
     valueEl.className = 'field-value';
-    valueEl.textContent = typeof initialValue === 'string'?initialValue:(Number.isInteger(initialValue)?initialValue:initialValue.toFixed(2));
+    valueEl.textContent = typeof initialValue === 'string'?initialValue:(Number.isInteger(initialValue)?initialValue:initialValue.toPrecision(3));
     valueEl.style.marginLeft = '10px';
     container.appendChild(labelEl);
     container.appendChild(valueEl);
@@ -175,7 +175,7 @@ function makeStaticField(label, initialValue) {
     return {
         html: container,
         update: (newValue) => {
-            valueEl.textContent = typeof newValue === 'string'?newValue:(Number.isInteger(newValue)?newValue:newValue.toFixed(2));
+            valueEl.textContent = typeof newValue === 'string'?newValue:(Number.isInteger(newValue)?newValue:newValue.toPrecision(3));
         }
     };
 }
@@ -350,14 +350,16 @@ String.prototype.count=function(c) {
   return result;
 };
 
-function makeGridImageVisual(spec, initImg){
-    let img = initImg
+function makeGridImageVisual(spec, images){
+    let img = images[0]
     let pyramGrid = undefined
     let interGrid = undefined
     let pyramNeuronDisp = makePyramNeuronDisplay(img.vpn[0])
     let pyramReceptorDisp = makePyramReceptorDisplay(img.vpr[0])
     let interNeuronDisp = makeInterNeuronDisplay(img.vin[0])
     let interReceptorDisp = makeInterReceptorDisplay(img.vir[0])
+    let vPlot = makePlot(1000,400,"red")
+
     let pyramDisp = makevbox([
         pyramNeuronDisp.html,
         pyramReceptorDisp.html
@@ -382,6 +384,7 @@ function makeGridImageVisual(spec, initImg){
             makeh("Inter"),
             ...img.in2py[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
         ])
+        vPlot.setArr([...Array(images.length).keys()].map(i=>[i*spec.dt,images[i].vpn[ind].V_s]))
     }
 
     function selectInter(ind){
@@ -395,6 +398,7 @@ function makeGridImageVisual(spec, initImg){
             makeh("Pyram"),
             ...img.py2in[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
         ])
+        vPlot.setArr([...Array(images.length).keys()].map(i=>(i,[i*spec.dt,images[i].vin[ind].V])))
     }
 
     pyramGrid = makeNeuronGrid(img.vpn, spec.size, selectPyram)
@@ -402,26 +406,28 @@ function makeGridImageVisual(spec, initImg){
     selectPyram(0)
     pyramGrid.select(0)
     
-    let cont = makehbox([
-        makevbox([
-            makeh("Pyramidal"),
-            pyramGrid.html,
-            makeh("Inter"),
-            interGrid.html
-        ]),
-        makevbox([
-            pyramDisp,
-            interDisp,
-            synapseDisp
+    let cont = 
+        makehbox([
+            makevbox([
+                makeh("Pyramidal"),
+                pyramGrid.html,
+                makeh("Inter"),
+                interGrid.html
+            ]),
+            makevbox([
+                pyramDisp,
+                interDisp,
+                //synapseDisp
+            ]),
+        vPlot.html
         ])
-    ])
 
     return {
         html: cont,
-        setImage: newImg=>{
-            img = newImg
-            pyramGrid.update(newImg.vpn)
-            interGrid.update(newImg.vin)
+        setImage: ind=>{
+            img = images[ind]
+            pyramGrid.update(img.vpn)
+            interGrid.update(img.vin)
             if(pyramGrid.getSelection()!=-1) selectPyram(pyramGrid.getSelection())
             if(interGrid.getSelection()!=-1) selectInter(interGrid.getSelection())
         }

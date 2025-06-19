@@ -2,7 +2,8 @@ const UniformType = Object.freeze({
     U1F: 1,
     U2F: 2,
     U3F: 3,
-    U4F: 4
+    U4F: 4,
+    U1I: 5,
 });
 
 class ComputeShader{
@@ -86,7 +87,10 @@ class ComputeShader{
                     gl.uniform2f(this.programLocations.get(id), val[0], val[1])
                     break;
                 case UniformType.U1F:
-                    gl.uniform1f(this.programLocations.get(id), val[0])
+                    gl.uniform1f(this.programLocations.get(id), val)
+                    break;
+                case UniformType.U1I:
+                    gl.uniform1i(this.programLocations.get(id), val)
                     break;
                 default:
                     gl.uniform1f(this.programLocations.get(id), val)

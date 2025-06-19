@@ -39,12 +39,12 @@ async function deserializeNetimages(file) {
         },
         uint64s: () => {
             let binaryStr = '';
-            for (let i = 0; i < 8; i++) {
+            for (let i = 7; i >= 0; i--) {
                 const byte = dataView.getUint8(offset + i);
                 binaryStr += byte.toString(2).padStart(8, '0');
             }
             offset += 8;
-            return binaryStr;
+            return binaryStr.split("").reverse().join("");
         },
         skip: (val) => {
             offset += val

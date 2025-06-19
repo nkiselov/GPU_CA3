@@ -18,7 +18,7 @@
             });
         });
         
-        return { minX, maxX, minY, maxY };
+        return { minX, maxX: Math.max(minX+1e-9,maxX), minY, maxY: Math.max(minY+1e-9,maxY) };
     }
 
     module.findNiceNumber = function(range, round) {
@@ -157,6 +157,9 @@ function makePlot(width,height,color){
             ctx.fillStyle='#fff';
             ctx.fillRect(0,0,width,height)
             plotter.plot([{points: arr,color: color}],ctx,width*0.1,height*0.1,width*0.9,height*0.9)
+        },
+        setProgress: x=>{
+            plottrt
         }
     }
 }
