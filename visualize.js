@@ -1,9 +1,9 @@
-loadAndDeserializeNetimages("grid20x20.bin").then(data=>{
+loadAndDeserializeNetimages("debugInter20x20.bin").then(data=>{
 
-// console.log(data)
+console.log(data)
 
-let curInd = 20
-let visual = makeGridImageVisual(data.spec,data.images[curInd])
+let curInd = 0
+let visual = makeGridImageVisual(data.spec,data.images)
 let rewind = false
 let rewindToggle = makeToggle(rewind,(val)=>rewind=val)
 let iterLabel = makeh(curInd)
@@ -12,7 +12,7 @@ function step(){
     if(rewind) curInd = (curInd+data.images.length-1)%data.images.length
     else curInd = (curInd+1)%data.images.length
     iterLabel.innerHTML = curInd
-    visual.setImage(data.images[curInd])
+    visual.setImage(curInd)
 }
 
 let running = false
