@@ -351,14 +351,16 @@ String.prototype.count=function(c) {
 };
 
 function makeGridImageVisual(spec, images){
+    let cind = 0
     let img = images[0]
     let pyramGrid = undefined
     let interGrid = undefined
+    let posPlot = undefined
     let pyramNeuronDisp = makePyramNeuronDisplay(img.vpn[0])
     let pyramReceptorDisp = makePyramReceptorDisplay(img.vpr[0])
     let interNeuronDisp = makeInterNeuronDisplay(img.vin[0])
     let interReceptorDisp = makeInterReceptorDisplay(img.vir[0])
-    let vPlot = makePlot(1000,400,"red")
+    let vPlot = makePlot(800,300,"red")
 
     let pyramDisp = makevbox([
         pyramNeuronDisp.html,
@@ -373,7 +375,9 @@ function makeGridImageVisual(spec, images){
     let synapseDispRef = makeboxref(synapseDisp)
 
     function selectPyram(ind){
+        pyramGrid.select(ind)
         interGrid.select(-1)
+        posPlot.selectPy(ind)
         pyramNeuronDisp.update(img.vpn[ind])
         pyramReceptorDisp.update(img.vpr[ind])
         interDisp.style.display = 'none'
@@ -385,10 +389,13 @@ function makeGridImageVisual(spec, images){
             ...img.in2py[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
         ])
         vPlot.setArr([...Array(images.length).keys()].map(i=>[i*spec.dt,images[i].vpn[ind].V_s]))
+        vPlot.setProgress(cind*spec.dt)
     }
 
     function selectInter(ind){
+        interGrid.select(ind)
         pyramGrid.select(-1)
+        posPlot.selectIn(ind)
         interNeuronDisp.update(img.vin[ind])
         interReceptorDisp.update(img.vir[ind])
         interDisp.style.display = 'flex'
@@ -399,13 +406,20 @@ function makeGridImageVisual(spec, images){
             ...img.py2in[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
         ])
         vPlot.setArr([...Array(images.length).keys()].map(i=>(i,[i*spec.dt,images[i].vin[ind].V])))
+        vPlot.setProgress(cind*spec.dt)
     }
 
+    posPlot = createPositionsPlot(600,spec.pyPos,spec.inPos,spec.inRad,selectPyram,selectInter)
     pyramGrid = makeNeuronGrid(img.vpn, spec.size, selectPyram)
     interGrid = makeNeuronGrid(img.vin, Math.ceil(Math.sqrt(spec.inN)), selectInter)
     selectPyram(0)
     pyramGrid.select(0)
-    
+    let sideBox = makevbox([
+                pyramDisp,
+                interDisp,
+                //synapseDisp
+            ])
+    sideBox.style.minWidth = '150px'
     let cont = 
         makehbox([
             makevbox([
@@ -414,17 +428,17 @@ function makeGridImageVisual(spec, images){
                 makeh("Inter"),
                 interGrid.html
             ]),
+            sideBox,
             makevbox([
-                pyramDisp,
-                interDisp,
-                //synapseDisp
-            ]),
-        vPlot.html
+                posPlot.html,
+                vPlot.html
+            ])
         ])
 
     return {
         html: cont,
         setImage: ind=>{
+            cind = ind
             img = images[ind]
             pyramGrid.update(img.vpn)
             interGrid.update(img.vin)

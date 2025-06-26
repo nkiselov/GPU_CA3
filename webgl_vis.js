@@ -6,7 +6,7 @@
 
 //20 - limit case
 //21 - few inh
-deserializeFireHist("skuf_grid300_neo-6.bin").then(data=>{
+deserializeFireHist("skuf_grid200_neo.bin").then(data=>{
 
 console.log(data)
 
@@ -121,6 +121,13 @@ let updateShader = new ComputeShader(gl,new MeshAll(),updateFS,["srcTex","lookup
 updateShader.setUniform("hsz",hsz,UniformType.U1I)
 fadeShader.setUniform("decay",0.01,UniformType.U1F)
 
+// function downloadCanvas(canvas, filename) {
+//     const link = document.createElement('a');
+//     link.download = filename;
+//     link.href = canvas.toDataURL('image/png');
+//     link.click();
+// }
+
 let curInd = 0
 function anim(){
     for(let i=0; i<10; i++){
@@ -135,6 +142,8 @@ function anim(){
         colorTexPong.swap()
         copyShader.render(colorTexPong.getCur())
         curInd = (curInd+1)%data.fireHist.length
+        // let downloadStep = Math.floor(25600/9)
+        // if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
     }
     requestAnimationFrame(anim)
 }

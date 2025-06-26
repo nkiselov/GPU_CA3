@@ -52,12 +52,20 @@ async function deserializeNetimages(file) {
         }
     };
 
+    function readPosArr(){
+        const size = read.uint64();
+        return Array(size).fill(0).map(()=>[read.float(),read.float()])
+    }
+
     const spec = {
         size: read.int32(),
         pyN: read.int32(),
         inN: read.int32(),
         inRad: read.float(),
-        dt: read.float()
+        dt: read.float(),
+        tris: read.int32(),
+        pyPos: readPosArr(),
+        inPos: readPosArr()
     }
 
     // Read number of netimages

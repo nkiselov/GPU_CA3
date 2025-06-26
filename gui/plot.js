@@ -120,7 +120,7 @@
         ctx.stroke();
     }
 
-    module.plot = function(curves, ctx, startX, startY, endX, endY) {
+    module.plot = function(curves, vlines, ctx, startX, startY, endX, endY, height) {
         const plotArea = { startX, startY, endX, endY };
         const bounds = module.findBounds(curves);
         
@@ -138,8 +138,18 @@
                 const point = module.mapToCanvas(curve.points[i][0], curve.points[i][1], bounds, plotArea);
                 ctx.lineTo(point.x, point.y);
             }
+
             ctx.stroke();
         });
+
+        ctx.strokeStyle = 'blue'
+        vlines.forEach(x => {
+            const xv = module.mapToCanvas(x,0,bounds,plotArea).x
+            ctx.beginPath()
+            ctx.moveTo(xv,0)
+            ctx.lineTo(xv,height)
+            ctx.stroke()
+        })
     }
 
 })(this);
@@ -151,15 +161,22 @@ function makePlot(width,height,color){
     canvas.style.width = width
     canvas.style.height = height
     let ctx = canvas.getContext('2d')
+    let carr = undefined
+    let prg = 0
+    function update(){
+        ctx.fillStyle='#fff';
+        ctx.fillRect(0,0,width,height)
+        plotter.plot([{points: carr,color: color}],[prg],ctx,width*0.1,height*0.1,width*0.9,height*0.9,height)
+    }
     return {
         html: canvas,
-        setArr: (arr)=>{
-            ctx.fillStyle='#fff';
-            ctx.fillRect(0,0,width,height)
-            plotter.plot([{points: arr,color: color}],ctx,width*0.1,height*0.1,width*0.9,height*0.9)
+        setArr: arr=>{
+            carr=arr
+            update()
         },
         setProgress: x=>{
-            plottrt
+            prg = x
+            update()
         }
     }
 }
