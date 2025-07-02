@@ -7,6 +7,7 @@
 //20 - limit case
 //21 - few inh
 deserializeFireHist("skuf_grid200_neo.bin").then(data=>{
+// deserializeFireHist("skuf_grid200_neo.bin").then(data=>{
 
 console.log(data)
 

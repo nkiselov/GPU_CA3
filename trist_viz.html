@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Graph Visualization</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        canvas { border: 1px solid #000; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Graph Visualization</h1>
+    <canvas id="graphCanvas" width="1000" height="1000"></canvas>
+
+    <script>
+        function drawGraph(coordURL, connURL, canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.lineWidth = 1;  // Thin edges
+            Promise.all([fetch(coordURL), fetch(connURL)])
+                .then(responses => Promise.all(responses.map(res => res.text())))
+                .then(([coordData, connData]) => {
+                    const coordLines = coordData.trim().split('\n');
+                    const xCoords = coordLines[0].split(',').map(Number);
+                    const yCoords = coordLines[1].split(',').map(Number);
+                    const connMatrix = connData.trim().split('\n').map(line => line.split(',').map(Number));
+
+                    // Compute bounds
+                    const minX = Math.min(...xCoords);
+                    const maxX = Math.max(...xCoords);
+                    const minY = Math.min(...yCoords);
+                    const maxY = Math.max(...yCoords);
+                    
+                    // Calculate scaling factors with 10% padding
+                    const padding = 0.1;
+                    const scaleX = canvas.width / (maxX - minX) * (1 - padding);
+                    const scaleY = canvas.height / (maxY - minY) * (1 - padding);
+                    const scale = Math.min(scaleX, scaleY);
+                    
+                    // Scale and center coordinates
+                    const scaledX = xCoords.map(x => (x - minX) * scale + (canvas.width - (maxX - minX) * scale) / 2);
+                    const scaledY = yCoords.map(y => (y - minY) * scale + (canvas.height - (maxY - minY) * scale) / 2);
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw edges first
+                    for (let i = 0; i < connMatrix.length; i++) {
+                        for (let j = i; j < connMatrix[i].length; j++) {
+                            if (connMatrix[i][j] > 0) {
+                                ctx.globalAlpha = 0.04; 
+                                ctx.strokeStyle = ['#3498db', '#2ecc71', '#e74c3c'][connMatrix[i][j] - 1] || '#34495e';
+                                ctx.beginPath();
+                                ctx.moveTo(scaledX[i], scaledY[i]);
+                                ctx.lineTo(scaledX[j], scaledY[j]);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+
+                    // Draw nodes on top
+                    for (let i = 0; i < scaledX.length; i++) {
+                        ctx.globalAlpha = 1; 
+                        ctx.fillStyle = '#2c3e50';
+                        ctx.beginPath();
+                        ctx.arc(scaledX[i], scaledY[i], 2, 0, Math.PI * 2);  // 4px diameter (2px radius)
+                        ctx.fill();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        window.onload = function() {
+            const canvas = document.getElementById('graphCanvas');
+            drawGraph('24wikiCoordinates.csv', '24wikiConnectivity.csv', canvas);
+        };
+    </script>
+</body>
+</html>
