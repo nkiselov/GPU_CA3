@@ -361,7 +361,23 @@ function makeGridImageVisual(spec, images){
     let interNeuronDisp = makeInterNeuronDisplay(img.vin[0])
     let interReceptorDisp = makeInterReceptorDisplay(img.vir[0])
     let vPlot = makePlot(800,300,"red")
+    let parr = []
+    let pkey = "V_s"
+    let keyText = makeh(pkey)
 
+    function updatePlotArr(arr, key = undefined){
+        if(key!=undefined) keyText.innerHTML = key
+        else keyText.innerHTML = pkey
+        parr=arr
+        vPlot.setArr(parr.map(x=>[x[0],x[1][key==undefined?pkey:key]]))
+    }
+
+    function updatePlotKey(nkey){
+        keyText.innerHTML = nkey
+        pkey=nkey
+        vPlot.setArr(parr.map(x=>[x[0],x[1][pkey]]))
+    }
+    
     let pyramDisp = makevbox([
         pyramNeuronDisp.html,
         pyramReceptorDisp.html
@@ -388,7 +404,7 @@ function makeGridImageVisual(spec, images){
             makeh("Inter"),
             ...img.in2py[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
         ])
-        vPlot.setArr([...Array(images.length).keys()].map(i=>[i*spec.dt,images[i].vpn[ind].V_s]))
+        updatePlotArr(([...Array(images.length).keys()].map(i=>[i*spec.dt,images[i].vpn[ind]])))
         vPlot.setProgress(cind*spec.dt)
     }
 
@@ -405,11 +421,11 @@ function makeGridImageVisual(spec, images){
             makeh("Pyram"),
             ...img.py2in[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
         ])
-        vPlot.setArr([...Array(images.length).keys()].map(i=>(i,[i*spec.dt,images[i].vin[ind].V])))
+        updatePlotArr([...Array(images.length).keys()].map(i=>(i,[i*spec.dt,images[i].vin[ind]])),"V")
         vPlot.setProgress(cind*spec.dt)
     }
 
-    posPlot = createPositionsPlot(600,spec.pyPos,spec.inPos,spec.inRad,selectPyram,selectInter)
+    posPlot = createPositionsPlot(600,spec.pyPos,spec.inPos,spec.inRad,img,selectPyram,selectInter)
     pyramGrid = makeNeuronGrid(img.vpn, spec.size, selectPyram)
     interGrid = makeNeuronGrid(img.vin, Math.ceil(Math.sqrt(spec.inN)), selectInter)
     selectPyram(0)
@@ -431,7 +447,15 @@ function makeGridImageVisual(spec, images){
             sideBox,
             makevbox([
                 posPlot.html,
-                vPlot.html
+                makevbox([
+                    makehbox([
+                        keyText,
+                        makeButton("V_s",()=>updatePlotKey("V_s")),
+                        makeButton("V_p",()=>updatePlotKey("V_p")),
+                        makeButton("V_d",()=>updatePlotKey("V_d")),
+                    ]),
+                    vPlot.html
+                ])
             ])
         ])
 
@@ -444,6 +468,7 @@ function makeGridImageVisual(spec, images){
             interGrid.update(img.vin)
             if(pyramGrid.getSelection()!=-1) selectPyram(pyramGrid.getSelection())
             if(interGrid.getSelection()!=-1) selectInter(interGrid.getSelection())
+            posPlot.updateData(img)
         }
     }
 }

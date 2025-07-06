@@ -1,4 +1,9 @@
-function createPositionsPlot(size, pyPos, inPos, inRad, clickPy, clickIn) {
+function interpolateColor(c1, c2, t) {
+    t = Math.max(0, Math.min(1, t));
+    return `rgba(${Math.round(c1[0] * (1 - t) + c2[0]*t)}, ${Math.round(c1[1] * (1 - t) + c2[1]*t)}, ${Math.round(c1[2] * (1 - t) + c2[2]*t)},${(c1[3] * (1 - t) + c2[3]*t)})`;
+}
+
+function createPositionsPlot(size, pyPos, inPos, inRad, initImg, clickPy, clickIn) {
     // Create container
     const container = document.createElement('div');
     container.style.position = 'relative';
@@ -24,41 +29,53 @@ function createPositionsPlot(size, pyPos, inPos, inRad, clickPy, clickIn) {
             height - y * height // Flip Y axis
         ];
     }
+
+    let curImg = initImg
     
     // Draw shapes
     function draw() {
         ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < pyPos.length; i++) {
+            const [x, y] = pyPos[i];
+            const [sx, sy] = scalePosition(x, y);
+            ctx.fillStyle = interpolateColor([0,0,0,0],[0,0,0,0.15],curImg.vpr[i].g_I/2)
+            ctx.beginPath();
+            ctx.arc(sx, sy, 10, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+        }
+        // ctx.clearRect(0, 0, width, height);
         
         // Draw inRad circles first (faint filled background)
-        ctx.fillStyle = 'rgba(255, 200, 200, 0.15)';
-        ctx.strokeStyle = 'rgba(255, 150, 150, 0.3)';
         ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255, 150, 150, 0.3)';
         for (let i = 0; i < inPos.length; i++) {
             const [x, y] = inPos[i];
             const [sx, sy] = scalePosition(x, y);
             ctx.beginPath();
             ctx.arc(sx, sy, inRad * width, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.closePath();
             ctx.stroke();
         }
-        
         // Draw circles (inPos)
         for (let i = 0; i < inPos.length; i++) {
             const [x, y] = inPos[i];
             const [sx, sy] = scalePosition(x, y);
             
             // Draw circle (smaller size)
-            ctx.fillStyle = 'rgba(255, 50, 50, 0.9)';
             ctx.beginPath();
-            ctx.arc(sx, sy, 4, 0, Math.PI * 2);
-            ctx.fill();
-            
+            ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+            ctx.fillStyle = interpolateColor([255,50,50,0.2],[255,50,50,1],(curImg.vin[i].V - (-60)) / (10 - (-60)))
+            ctx.closePath();
+            ctx.fill()
+
             // Highlight if selected
             if (selectedIn === i) {
                 ctx.strokeStyle = 'rgba(255, 200, 0, 0.8)';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.arc(sx, sy, 6, 0, Math.PI * 2);
+                ctx.closePath();
                 ctx.stroke();
             }
         }
@@ -69,11 +86,11 @@ function createPositionsPlot(size, pyPos, inPos, inRad, clickPy, clickIn) {
             const [sx, sy] = scalePosition(x, y);
             
             // Draw triangle (smaller size)
-            ctx.fillStyle = 'rgba(50, 180, 50, 0.9)';
+            ctx.fillStyle = interpolateColor([50,180,50,0.1],[50,180,50,1],(curImg.vpn[i].V_s - (-60)) / (20 - (-60)))
             ctx.beginPath();
-            ctx.moveTo(sx, sy - 4);
-            ctx.lineTo(sx - 3, sy + 3);
-            ctx.lineTo(sx + 3, sy + 3);
+            ctx.moveTo(sx, sy - 6);
+            ctx.lineTo(sx - 5, sy + 5);
+            ctx.lineTo(sx + 5, sy + 5);
             ctx.closePath();
             ctx.fill();
             
@@ -82,9 +99,9 @@ function createPositionsPlot(size, pyPos, inPos, inRad, clickPy, clickIn) {
                 ctx.strokeStyle = 'rgba(255, 200, 0, 0.8)';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(sx, sy - 5);
-                ctx.lineTo(sx - 4, sy + 4);
-                ctx.lineTo(sx + 4, sy + 4);
+                ctx.moveTo(sx, sy - 7);
+                ctx.lineTo(sx - 6, sy + 6);
+                ctx.lineTo(sx + 6, sy + 6);
                 ctx.closePath();
                 ctx.stroke();
             }
@@ -151,9 +168,8 @@ function createPositionsPlot(size, pyPos, inPos, inRad, clickPy, clickIn) {
             selectedPy = null;
             draw();
         },
-        updateData: (newPyPos, newInPos) => {
-            pyPos = newPyPos;
-            inPos = newInPos;
+        updateData: img => {
+            curImg = img
             draw();
         }
     };
