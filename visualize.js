@@ -1,4 +1,4 @@
-loadAndDeserializeNetimages("debugSoliton20x20.bin").then(data=>{
+loadAndDeserializeNetimages("debugNew20x20.bin").then(data=>{
 
 console.log(data)
 

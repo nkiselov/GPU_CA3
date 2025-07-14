@@ -166,7 +166,7 @@ function makePlot(width,height,color){
     function update(){
         ctx.fillStyle='#fff';
         ctx.fillRect(0,0,width,height)
-        plotter.plot([{points: carr,color: color},{points: carr.map(p=>[p[0],0]),color: 'green'}],[prg],ctx,width*0.1,height*0.1,width*0.9,height*0.9,height)
+        plotter.plot([{points: carr,color: color},{points: carr.map(p=>[p[0],-10]),color: 'green'}],[prg],ctx,width*0.1,height*0.1,width*0.9,height*0.9,height)
     }
     return {
         html: canvas,

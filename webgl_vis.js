@@ -6,8 +6,15 @@
 
 //20 - limit case
 //21 - few inh
-deserializeFireHist("skuf_grid200_neo.bin").then(data=>{
-// deserializeFireHist("skuf_grid200_neo.bin").then(data=>{
+// deserializeFireHist("behavior_types_20/solitons_20_10_10_3.bin").then(data=>{
+
+// deserializeFireHist("behavior_types_20/algae_20_5_5_3.bin").then(data=>{
+
+// deserializeFireHist("behavior_types_20/ring_20_0_0_3.bin").then(data=>{
+
+// deserializeFireHist("behavior_types_20/algae_20_2_2_3.bin").then(data=>{
+
+deserializeFireHist("google_grid100_new.bin").then(data=>{
 
 console.log(data)
 
@@ -128,7 +135,7 @@ fadeShader.setUniform("decay",0.01,UniformType.U1F)
 //     link.href = canvas.toDataURL('image/png');
 //     link.click();
 // }
-
+console.log(data.fireHist.length)
 let curInd = 0
 function anim(){
     for(let i=0; i<10; i++){
@@ -143,7 +150,7 @@ function anim(){
         colorTexPong.swap()
         copyShader.render(colorTexPong.getCur())
         curInd = (curInd+1)%data.fireHist.length
-        // let downloadStep = Math.floor(25600/9)
+        // let downloadStep = Math.floor(25600/11)
         // if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
     }
     requestAnimationFrame(anim)

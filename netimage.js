@@ -113,7 +113,6 @@ async function deserializeNetimages(file) {
             image.vpr.push({
                 g_I: read.float(),
                 g_E: read.float(),
-                g_d: read.float(),
                 fire: read.boolean()
             });
             read.skip(3)
@@ -162,9 +161,9 @@ async function deserializeNetimages(file) {
         };
 
         // Read all synapse vectors
-        image.py2in = readSynapseVector();
-        image.in2py = readSynapseVector();
-        image.py2py = readSynapseVector();
+        // image.py2in = readSynapseVector();
+        // image.in2py = readSynapseVector();
+        // image.py2py = readSynapseVector();
         images.push(image);
     }
 

@@ -115,7 +115,6 @@ function makePyramReceptorDisplay(initialReceptor) {
     const fields = {
         g_I: makeStaticField('g_I', initialReceptor.g_I),
         g_E: makeStaticField('g_E', initialReceptor.g_E),
-        g_d: makeStaticField('g_d', initialReceptor.g_d),
         fire: makeStaticField('fire', initialReceptor.fire ? 'true' : 'false')
     };
 
@@ -128,7 +127,6 @@ function makePyramReceptorDisplay(initialReceptor) {
         update: (newReceptor) => {
             fields.g_I.update(newReceptor.g_I);
             fields.g_E.update(newReceptor.g_E);
-            fields.g_d.update(newReceptor.g_d);
             fields.fire.update(newReceptor.fire ? 'true' : 'false');
         }
     };
@@ -398,12 +396,12 @@ function makeGridImageVisual(spec, images){
         pyramReceptorDisp.update(img.vpr[ind])
         interDisp.style.display = 'none'
         pyramDisp.style.display = 'flex'
-        synapseDispRef([
-            makeh("Pyram"),
-            ...img.py2py[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
-            makeh("Inter"),
-            ...img.in2py[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
-        ])
+        // synapseDispRef([
+        //     makeh("Pyram"),
+        //     ...img.py2py[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
+        //     makeh("Inter"),
+        //     ...img.in2py[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
+        // ])
         updatePlotArr(([...Array(images.length).keys()].map(i=>[i*spec.dt,images[i].vpn[ind]])))
         vPlot.setProgress(cind*spec.dt)
     }
@@ -417,10 +415,10 @@ function makeGridImageVisual(spec, images){
         interDisp.style.display = 'flex'
         pyramDisp.style.display = 'none'
 
-        synapseDispRef([
-            makeh("Pyram"),
-            ...img.py2in[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
-        ])
+        // synapseDispRef([
+        //     makeh("Pyram"),
+        //     ...img.py2in[ind].filter(syn=>syn.input.count(1)>0).map(syn=>makeSynapseDisplay(syn).html),
+        // ])
         updatePlotArr([...Array(images.length).keys()].map(i=>(i,[i*spec.dt,images[i].vin[ind]])),"V")
         vPlot.setProgress(cind*spec.dt)
     }
