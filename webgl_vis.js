@@ -63,6 +63,9 @@ uniform sampler2D srcTex;
 
 void main(){
     outColor = texture(srcTex,texCoord);
+    outColor = (2.0*outColor + vec4(1.0,1.0,1.0,0.0));
+    outColor/=max(outColor.x,max(outColor.y,outColor.z));
+    outColor.w=1.0;
 }
 `
 
@@ -139,6 +142,7 @@ console.log(data.fireHist.length)
 let curInd = 0
 function anim(){
     for(let i=0; i<10; i++){
+        console.log(curInd)
         if(curInd==0){
             zeroShader.run([],colorTexPong.getCur())
         }
@@ -150,7 +154,7 @@ function anim(){
         colorTexPong.swap()
         copyShader.render(colorTexPong.getCur())
         curInd = (curInd+1)%data.fireHist.length
-        // let downloadStep = Math.floor(25600/11)
+        // let downloadStep = Math.floor(6400/11)
         // if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
     }
     requestAnimationFrame(anim)

@@ -113,6 +113,38 @@ function makePyramReceptorDisplay(initialReceptor) {
     container.className = 'receptor-display';
 
     const fields = {
+        g_I_s: makeStaticField('g_I_s', initialReceptor.g_I_s),
+        g_E_s: makeStaticField('g_E_s', initialReceptor.g_E_s),
+        g_I_p: makeStaticField('g_I_p', initialReceptor.g_I_p),
+        g_E_p: makeStaticField('g_E_p', initialReceptor.g_E_p),
+        g_I_d: makeStaticField('g_I_d', initialReceptor.g_I_d),
+        g_E_d: makeStaticField('g_E_d', initialReceptor.g_E_d),
+        fire: makeStaticField('fire', initialReceptor.fire ? 'true' : 'false')
+    };
+
+    Object.values(fields).forEach(field => {
+        container.appendChild(field.html);
+    });
+
+    return {
+        html: container,
+        update: (newReceptor) => {
+            fields.g_I_s.update(newReceptor.g_I_s);
+            fields.g_E_s.update(newReceptor.g_E_s);
+            fields.g_I_p.update(newReceptor.g_I_p);
+            fields.g_E_p.update(newReceptor.g_E_p);
+            fields.g_I_d.update(newReceptor.g_I_d);
+            fields.g_E_d.update(newReceptor.g_E_d);
+            fields.fire.update(newReceptor.fire ? 'true' : 'false');
+        }
+    };
+}
+
+function makeInterReceptorDisplay(initialReceptor) {
+    const container = document.createElement('div');
+    container.className = 'receptor-display';
+
+    const fields = {
         g_I: makeStaticField('g_I', initialReceptor.g_I),
         g_E: makeStaticField('g_E', initialReceptor.g_E),
         fire: makeStaticField('fire', initialReceptor.fire ? 'true' : 'false')
@@ -126,28 +158,6 @@ function makePyramReceptorDisplay(initialReceptor) {
         html: container,
         update: (newReceptor) => {
             fields.g_I.update(newReceptor.g_I);
-            fields.g_E.update(newReceptor.g_E);
-            fields.fire.update(newReceptor.fire ? 'true' : 'false');
-        }
-    };
-}
-
-function makeInterReceptorDisplay(initialReceptor) {
-    const container = document.createElement('div');
-    container.className = 'receptor-display';
-
-    const fields = {
-        g_E: makeStaticField('g_E', initialReceptor.g_E),
-        fire: makeStaticField('fire', initialReceptor.fire ? 'true' : 'false')
-    };
-
-    Object.values(fields).forEach(field => {
-        container.appendChild(field.html);
-    });
-
-    return {
-        html: container,
-        update: (newReceptor) => {
             fields.g_E.update(newReceptor.g_E);
             fields.fire.update(newReceptor.fire ? 'true' : 'false');
         }
