@@ -111,8 +111,12 @@ async function deserializeNetimages(file) {
         const vprSize = read.uint64();
         for (let j = 0; j < vprSize; j++) {
             image.vpr.push({
-                g_I: read.float(),
-                g_E: read.float(),
+                g_I_s: read.float(),
+                g_E_s: read.float(),
+                g_I_p: read.float(),
+                g_E_p: read.float(),
+                g_I_d: read.float(),
+                g_E_d: read.float(),
                 fire: read.boolean()
             });
             read.skip(3)
@@ -134,6 +138,7 @@ async function deserializeNetimages(file) {
         const virSize = read.uint64();
         for (let j = 0; j < virSize; j++) {
             image.vir.push({
+                g_I: read.float(),
                 g_E: read.float(),
                 fire: read.boolean()
             });
