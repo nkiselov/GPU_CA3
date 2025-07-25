@@ -145,20 +145,20 @@ let updateShader = new ComputeShader(gl,new MeshAll(),updateFS,["srcTex","lookup
 updateShader.setUniform("hsz",hsz,UniformType.U1I)
 fadeShader.setUniform("decay",0.00015,UniformType.U1F)
 
-function downloadCanvas(canvas, filename) {
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-}
+// function downloadCanvas(canvas, filename) {
+//     const link = document.createElement('a');
+//     link.download = filename;
+//     link.href = canvas.toDataURL('image/png');
+//     link.click();
+// }
 console.log(data.fireHist.length)
 let curInd = 0
 function anim(){
     for(let i=0; i<10; i++){
-        console.log(curInd)
-        if(curInd==0){
-            zeroShader.run([],colorTexPong.getCur())
-        }
+        // console.log(curInd)
+        // if(curInd==0){
+        //     zeroShader.run([],colorTexPong.getCur())
+        // }
         updateShader.setUniform("boundLow",bounds[curInd],UniformType.U1I)
         updateShader.setUniform("boundHigh",bounds[curInd+1],UniformType.U1I)
         updateShader.run([colorTexPong.getCur(),lookupTex,histTex],colorTexPong.getNext())
