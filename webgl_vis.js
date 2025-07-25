@@ -95,8 +95,8 @@ canvas.style.width = "100%"
 canvas.style.imageRendering = "pixelated"
 let gl = canvas.getContext("webgl2")
 
-if (!gl.getExtension('OES_texture_float_linear'))
-    throw new Error('Not found OES_texture_float_linear')
+// if (!gl.getExtension('OES_texture_float_linear'))
+//     throw new Error('Not found OES_texture_float_linear')
 if (!gl.getExtension('EXT_color_buffer_float'))
     throw new Error('Not found EXT_color_buffer_float')
 
@@ -131,8 +131,8 @@ for(let x=0; x<hsz; x++){
     }
 }
 
-let colorTex0 = new ComputeTexture(gl,TextureType.T4I,size,size,null,true)
-let colorTex1 = new ComputeTexture(gl,TextureType.T4I,size,size,null,true)
+let colorTex0 = new ComputeTexture(gl,TextureType.T4F,size,size,null,true)
+let colorTex1 = new ComputeTexture(gl,TextureType.T4F,size,size,null,true)
 let colorTexPong = new PingPong(colorTex0,colorTex1)
 let lookupTex = new ComputeTexture(gl,TextureType.T4I,size,size,lookup,false)
 let histTex = new ComputeTexture(gl,TextureType.T4I,hsz,hsz,history,false)
@@ -145,17 +145,17 @@ let updateShader = new ComputeShader(gl,new MeshAll(),updateFS,["srcTex","lookup
 updateShader.setUniform("hsz",hsz,UniformType.U1I)
 fadeShader.setUniform("decay",0.00015,UniformType.U1F)
 
-// function downloadCanvas(canvas, filename) {
-//     const link = document.createElement('a');
-//     link.download = filename;
-//     link.href = canvas.toDataURL('image/png');
-//     link.click();
-// }
+function downloadCanvas(canvas, filename) {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
 console.log(data.fireHist.length)
 let curInd = 0
 function anim(){
     for(let i=0; i<10; i++){
-        // console.log(curInd)
+        console.log(curInd)
         if(curInd==0){
             zeroShader.run([],colorTexPong.getCur())
         }
@@ -167,8 +167,8 @@ function anim(){
         colorTexPong.swap()
         copyShader.render(colorTexPong.getCur())
         curInd = (curInd+1)%data.fireHist.length
-        // let downloadStep = Math.floor(12800/17)
-        // if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
+        let downloadStep = Math.floor(12800/7)
+        if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
     }
     requestAnimationFrame(anim)
 }
