@@ -131,8 +131,8 @@ for(let x=0; x<hsz; x++){
     }
 }
 
-let colorTex0 = new ComputeTexture(gl,TextureType.T4F,size,size,null,true)
-let colorTex1 = new ComputeTexture(gl,TextureType.T4F,size,size,null,true)
+let colorTex0 = new ComputeTexture(gl,TextureType.T4I,size,size,null,true)
+let colorTex1 = new ComputeTexture(gl,TextureType.T4I,size,size,null,true)
 let colorTexPong = new PingPong(colorTex0,colorTex1)
 let lookupTex = new ComputeTexture(gl,TextureType.T4I,size,size,lookup,false)
 let histTex = new ComputeTexture(gl,TextureType.T4I,hsz,hsz,history,false)
