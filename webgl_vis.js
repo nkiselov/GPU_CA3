@@ -14,7 +14,7 @@
 
 // deserializeFireHist("behavior_types_20/algae_20_2_2_3.bin").then(data=>{
 
-deserializeFireHist("google_grid100_new.bin").then(data=>{
+deserializeFireHist("google_grid100_d8_r10.bin").then(data=>{
 
 console.log(data)
 
@@ -35,7 +35,7 @@ void main(){
     vec4 target = texture(lookupTex,texCoord);
     for(int i=boundLow; i<boundHigh; i++){
         vec2 crd = vec2(0.5,0.5)/float(hsz) + vec2(float(i%hsz)/float(hsz),float(i/hsz)/float(hsz));
-        if(texture(histTex,crd)==target) curVal.x = 1.0;
+        if(texture(histTex,crd)==target) curVal.z = 1.0;
     }
     outColor = curVal;
 }
@@ -50,7 +50,7 @@ uniform float decay;
 
 void main(){
     vec4 curVal = texture(srcTex,texCoord);
-    curVal.x = max(0.0,curVal.x-decay);
+    curVal.z = max(0.0,curVal.z-decay);
     outColor = curVal;
 }
 `
@@ -61,11 +61,19 @@ in vec2 texCoord;
 out vec4 outColor;
 uniform sampler2D srcTex;
 
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
 void main(){
     outColor = texture(srcTex,texCoord);
-    outColor = (2.0*outColor + vec4(1.0,1.0,1.0,0.0));
-    outColor/=max(outColor.x,max(outColor.y,outColor.z));
+    //outColor = (outColor + vec4(0.0,0.0,0.0,1.0));
+    //outColor/=max(outColor.x,max(outColor.y,outColor.z));
     outColor.w=1.0;
+    outColor.xyz = hsv2rgb(vec3(1.0-outColor.z,1.0,1.0))*outColor.z;
 }
 `
 
@@ -86,6 +94,11 @@ canvas.height = size
 canvas.style.width = "100%"
 canvas.style.imageRendering = "pixelated"
 let gl = canvas.getContext("webgl2")
+
+if (!gl.getExtension('OES_texture_float_linear'))
+    throw new Error('Not found OES_texture_float_linear')
+if (!gl.getExtension('EXT_color_buffer_float'))
+    throw new Error('Not found EXT_color_buffer_float')
 
 document.body.appendChild(canvas)
 
@@ -118,8 +131,8 @@ for(let x=0; x<hsz; x++){
     }
 }
 
-let colorTex0 = new ComputeTexture(gl,TextureType.T4I,size,size,null,true)
-let colorTex1 = new ComputeTexture(gl,TextureType.T4I,size,size,null,true)
+let colorTex0 = new ComputeTexture(gl,TextureType.T4F,size,size,null,true)
+let colorTex1 = new ComputeTexture(gl,TextureType.T4F,size,size,null,true)
 let colorTexPong = new PingPong(colorTex0,colorTex1)
 let lookupTex = new ComputeTexture(gl,TextureType.T4I,size,size,lookup,false)
 let histTex = new ComputeTexture(gl,TextureType.T4I,hsz,hsz,history,false)
@@ -130,7 +143,7 @@ let copyShader = new ComputeShader(gl,new MeshAll(),copyFS,["srcTex"])
 let updateShader = new ComputeShader(gl,new MeshAll(),updateFS,["srcTex","lookupTex","histTex"])
 
 updateShader.setUniform("hsz",hsz,UniformType.U1I)
-fadeShader.setUniform("decay",0.01,UniformType.U1F)
+fadeShader.setUniform("decay",0.00015,UniformType.U1F)
 
 // function downloadCanvas(canvas, filename) {
 //     const link = document.createElement('a');
@@ -142,7 +155,7 @@ console.log(data.fireHist.length)
 let curInd = 0
 function anim(){
     for(let i=0; i<10; i++){
-        console.log(curInd)
+        // console.log(curInd)
         if(curInd==0){
             zeroShader.run([],colorTexPong.getCur())
         }
@@ -154,7 +167,7 @@ function anim(){
         colorTexPong.swap()
         copyShader.render(colorTexPong.getCur())
         curInd = (curInd+1)%data.fireHist.length
-        // let downloadStep = Math.floor(6400/11)
+        // let downloadStep = Math.floor(12800/17)
         // if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
     }
     requestAnimationFrame(anim)
