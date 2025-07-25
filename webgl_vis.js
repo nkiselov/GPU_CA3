@@ -155,10 +155,10 @@ console.log(data.fireHist.length)
 let curInd = 0
 function anim(){
     for(let i=0; i<10; i++){
-        // console.log(curInd)
-        // if(curInd==0){
-        //     zeroShader.run([],colorTexPong.getCur())
-        // }
+        console.log(curInd)
+        if(curInd==0){
+            zeroShader.run([],colorTexPong.getCur())
+        }
         updateShader.setUniform("boundLow",bounds[curInd],UniformType.U1I)
         updateShader.setUniform("boundHigh",bounds[curInd+1],UniformType.U1I)
         updateShader.run([colorTexPong.getCur(),lookupTex,histTex],colorTexPong.getNext())
@@ -167,8 +167,8 @@ function anim(){
         colorTexPong.swap()
         copyShader.render(colorTexPong.getCur())
         curInd = (curInd+1)%data.fireHist.length
-        let downloadStep = Math.floor(12800/7)
-        if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
+        // let downloadStep = Math.floor(12800/7)
+        // if(curInd%downloadStep==0 && curInd>0) downloadCanvas(canvas,"img-"+Math.floor(curInd/downloadStep)+".png")
     }
     requestAnimationFrame(anim)
 }
